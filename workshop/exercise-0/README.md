@@ -5,7 +5,7 @@ In this section, you will create your own IBM Cloud account, and then get access
 2. After the email verification, confirm by logging in to https://cloud.ibm.com
 3. Go to the [Get Cluster](https://get-cluster.mybluemix.net) web page and enter your IBM ID (the email you used to sign up) and the lab key `knativerocks`.
 
-    ![](README_images/get-cluster.png)
+    ![](../README_images/get-cluster.png)
 
 3. You will be added to the IBM Lab account and granted access to a cluster.
 4. Refresh your [IBM Cloud Dashboard](https://cloud.ibm.com)
