@@ -12,7 +12,7 @@ In this section, you will create your own IBM Cloud account, and then get access
 5. Switch to the **IBM** account by clicking on the account selection drop down in the top nav bar.
 6. Click on **Kubernetes Clusters** in the Resource Summary tile.
 7. Under **Kubernetes Clusters**, click on the cluster that has been assigned to you.
-    ![](README_images/dashboard.png)
+    ![](../README_images/dashboard.png)
 8. This page has some overview information about your cluster, including an **ingress subdomain** that you will need later on in the lab.
 
 You will use this cluster for this lab. Note the name of your cluster as well as the ingress subdomain for use in later steps. Note that this is a *Standard/Paid* cluster (as opposed to FREE cluster.)
