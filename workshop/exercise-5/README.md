@@ -26,26 +26,30 @@ What hostname should we use? IBM Kubernetes Service gave us an external domain (
 
 ### Forward specific requests coming into IKS ingress to the Knative Ingress Gateway
 
-1. When requests come in to our fibonacci application through the ingress subdomain, we want them to be forwarded to the Knative ingress gateway. Edit the `forward-ingress.yaml` file with your own ingress subdomain, prepended with `fib-knative.default`. Remember that the fully qualified domain name for a route has the following form: `{route}.{namespace}.{domain}`.
+1. When requests come in to our fibonacci application through the ingress subdomain, we want them to be forwarded to the Knative ingress gateway. Edit the `forward-ingress.yaml` file with your own ingress subdomain, prepended with `fib-knative.default`. Remember that the fully qualified domain name for a route has the following form: `{route}.{namespace}.{domain}`. To edit the file, first click the `pencil` icon.
 
-The file should look something like:
+2. Then navigate to the `fib-knative/forward-ingress.yaml` file, and update with your own `<ingress_subdomain>`
 
-```yaml
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: iks-knative-ingress
-  namespace: istio-system
-spec:
-  rules:
-    - host: fib-knative.default.<ingress_subdomain>
-      http:
-        paths:
-          - path: /
-            backend:
-              serviceName: istio-ingressgateway
-              servicePort: 80
-```
+	The file should look something like:
+
+	```yaml
+	apiVersion: extensions/v1beta1
+	kind: Ingress
+	metadata:
+		name: iks-knative-ingress
+		namespace: istio-system
+	spec:
+		rules:
+			- host: fib-knative.default.<ingress_subdomain>
+				http:
+					paths:
+						- path: /
+							backend:
+								serviceName: istio-ingressgateway
+								servicePort: 80
+	```
+
+3. Save the file, and exit the tab.
 
 2. Apply the ingress rule you just created.
 
