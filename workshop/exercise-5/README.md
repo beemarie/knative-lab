@@ -91,7 +91,7 @@ A `Secret` is a Kubernetes object containing sensitive data such as a password, 
     kubectl apply --filename service-account.yaml
     ```
 
-Congratulations! You've set up some required credentials that the Knative build process will use to have access to push to your container registry. In the next exercise, you will deploy the app. The goal of this exercise was to set up some required credentials for later in this lab.
+Congratulations! You've set up some required credentials that the Knative build process will use to have access to push to your container registry. In the next exercise, you will build the container, push it to your container registry, and then deploy the app to knative. The goal of this exercise was to set up some required credentials for that flow.
 
 
 Continue on to [exercise 6](../exercise-6/README.md).
