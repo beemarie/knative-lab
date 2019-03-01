@@ -20,7 +20,7 @@ What hostname should we use? IBM Kubernetes Service gave us an external domain (
 	kubectl edit cm config-domain --namespace knative-serving
 	```
 
-3. Change all instances of `example.com` to your ingress subdomain, which should look something like: `mycluster6.us-south.containers.appdomain.cloud`. There should be one instance of `example.com` under `data`. New Knative applications will now be assigned a route with this host, rather than `example.com`.
+3. Change all instances of `example.com` to your ingress subdomain, which should look something like: `mycluster6.us-south.containers.appdomain.cloud`. There should be one instance of `example.com` under `data`. New Knative applications will now be assigned a route with this host, rather than `example.com`.  **Note: This will open vi. Use `i` to insert, `esc` to exit insert mode, `:w` to save, and `:q` to quit.
 
 ### Forward specific requests coming into IKS ingress to the Knative Ingress Gateway
 
