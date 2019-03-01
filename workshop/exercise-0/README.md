@@ -16,3 +16,5 @@ In this section, you will create your own IBM Cloud account, and then get access
 8. This page has some overview information about your cluster, including an **ingress subdomain** that you will need later on in the lab.
 
 You will use this cluster for this lab. Note the name of your cluster as well as the ingress subdomain for use in later steps. Note that this is a *Standard/Paid* cluster (as opposed to FREE cluster.)
+
+Continue on to [exercise 1](../exercise-1/README.md).

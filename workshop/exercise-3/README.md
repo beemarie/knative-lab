@@ -1,4 +1,4 @@
-## Setup: Clone the Application Repo and Deploy the Application
+## Clone the Application Repo and Deploy our First Application
 
 ### Clone the application repo
 The application for this lab is a simple node.js with express app which returns the first n numbers of the Fibonacci sequence. To use the app, deploy it, and simply make a GET request to the `/` endpoint with a number as the parameter. We'll deploy this application using Knative later, but for now just clone it from github.
