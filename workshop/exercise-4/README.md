@@ -46,7 +46,7 @@ A `Secret` is a Kubernetes object containing sensitive data such as a password, 
     echo -n "<token_value>" | base64 -b0  # MacOS
     ```
 
-2. This time we'll create the secret via a .yaml file. Update the `docker-secret.yaml` file with your base64 encoded password. You can find the password field near the end of the file. Username (`dG9rZW4=`) is already provided for you.
+2. This time we'll create the secret via a .yaml file. Update the `docker-secret.yaml` file with your base64 encoded password. You can find the password field near the end of the file. Username (`dG9rZW4=`) is already provided for you.  Replace `<base_64_encoded_token_value>` with your own base64 encoded token value.
 
 3. Apply the secret to your cluster:
 
