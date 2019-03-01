@@ -15,6 +15,8 @@ automatically.
 	ibmcloud ks cluster-addon-enable knative --cluster <your_cluster_name>
 	```
 
+    When prompted, enter `y` to enable `istio` on your cluster.
+
 3. The install process may take a minute or two. To know when it's done you
    can run two commands - first see if the Istio and Knative namespaces
    are there:
@@ -67,6 +69,15 @@ automatically.
    webhook-5dcbf967cd-lxzmk      1/1     Running   0          35s
    ```
 
-   If all of the pods shown are in a `Running` or `Completed` state then you should be all set.
+   If all of the pods shown are in a `Running` or `Completed` state then you should be all set. If not, wait a couple of minutes until all the pods are `Running` or `Completed`.  You can use a `--watch` for the various namespaces:
 
+   ```
+   kubectl get pods --namespace istio-system --watch
+   ```
+   ```
+   kubectl get pods --namespace knative-serving --watch
+   ```
+   ```
+   kubectl get pods --namespace knative-build --watch
+   ```
 Continue on to [exercise 3](../exercise-3/README.md).
