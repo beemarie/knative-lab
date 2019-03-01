@@ -9,7 +9,7 @@ automatically.
 
 ### Install Knative
 
-2. Install Knative on your cluster:
+1. Install Knative on your cluster:
 
     ```
 	ibmcloud ks cluster-addon-enable knative --cluster <your_cluster_name>
@@ -17,7 +17,7 @@ automatically.
 
     When prompted, enter `y` to enable `istio` on your cluster.
 
-3. The install process may take a minute or two. To know when it's done you
+2. The install process may take a minute or two. To know when it's done you
    can run two commands - first see if the Istio and Knative namespaces
    are there:
 
@@ -44,7 +44,7 @@ automatically.
 
    Notice the `istio-system` namespace, and the `knative-...` namespaces.
 
-   Once the namespaces are there, check to see if all of the Istio and
+3. Once the namespaces are there, check to see if all of the Istio and
    Knative pods are running correctly:
 
    ```
