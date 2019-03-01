@@ -58,7 +58,7 @@ A `Secret` is a Kubernetes object containing sensitive data such as a password, 
 
     ![](../README_images/password.png)
 
-6. Save the file, close this tab, and return to the cloudshell.
+6. Save the file and return to the cloudshell.
 
 7. Apply the secret to your cluster:
 
