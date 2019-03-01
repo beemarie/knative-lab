@@ -66,9 +66,7 @@ A `Secret` is a Kubernetes object containing sensitive data such as a password, 
     kubectl apply --filename docker-secret.yaml
     ```
 
-A `Service Account` provides an identity for processes that run in a Pod. This Service Account will be used to link the build process for Knative to the Secrets you just created.
-
-8. View the service account file, and notice that it's using the credentials you created earlier for pulling from and pushing to the container registry:
+8. A `Service Account` provides an identity for processes that run in a Pod. This Service Account will be used to link the build process for Knative to the Secrets you just created. View the service account file, and notice that it's using the credentials you created earlier for pulling from and pushing to the container registry:
 
     ```
     cat service-account.yaml
