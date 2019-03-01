@@ -3,7 +3,7 @@
 You must already have an IBM account, with a cluster created or assigned to you as documented in [previous step](../exercise-0/README.md).
 
 ## Connect to your cluster using the Cloud Shell
-For this lab, a hosted shell is provided for you with all the necessary tools installed. Use this web shell to perform the tasks in this lab. If you are having problems with this web shell, you can set everyting up locally, by following the instructions here(https://github.com/IBM/knative101/tree/master/workshop/exercise-0) instead.
+For this lab, a hosted shell is provided for you with all the necessary tools installed. Use this web shell to perform the tasks in this lab.
 
 1. Using Chrome or Firefox, go to the [Cloud Shell](https://cloudshell-console-istio.ng.bluemix.net/) and login using the Login button.
 2. Passcode is `knativerocks`
