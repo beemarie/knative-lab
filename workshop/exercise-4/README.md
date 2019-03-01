@@ -46,9 +46,21 @@ A `Secret` is a Kubernetes object containing sensitive data such as a password, 
     echo -n "<token_value>" | base64 -b0  # MacOS
     ```
 
-2. This time we'll create the secret via a .yaml file. Update the `docker-secret.yaml` file with your base64 encoded password. You can find the password field near the end of the file. Username (`dG9rZW4=`) is already provided for you.  Replace `<base_64_encoded_token_value>` with your own base64 encoded token value.
+3. This time we'll create the secret via a .yaml file. Update the `docker-secret.yaml` file with your base64 encoded password. Open the file by clicking the pencil icon in the top right of the terminal:
 
-3. Apply the secret to your cluster:
+    ![](../README_images/pencil.png)
+
+4. Click `Files` along the left side, and then navigate to `fib-knative/docker-secret.yaml`.
+
+    ![](../README_images/docker-secret.png)
+
+5. You can find the password field near the end of the file. Username (`dG9rZW4=`) is already provided for you.  Replace `<base_64_encoded_token_value>` with your own base64 encoded token value. When copying from the `cloudshell` it's possible that a new line character is generated where the line wrap is. Ensure you've removed any new line characters after you paste.
+
+    ![](../README_images/password.png)
+
+6. Save the file, close this tab, and return to the cloudshell.
+
+7. Apply the secret to your cluster:
 
     ```
     kubectl apply --filename docker-secret.yaml
