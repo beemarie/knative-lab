@@ -42,7 +42,9 @@ A Knative BuildTemplate encapsulates a shareable build process with some limited
 
 ### Deploy the Fibonacci App Using kubectl and service.yaml
 
-1. Edit the `service.yaml` file to point to your own container registry namespace by replacing instances of `<NAMESPACE>` with the container registry namespace you created earlier. Remember that to edit this file, you need to click the pencil icon, edit the file at `fib-knative/service.yaml` and then save the file. Finally, return to the cloudshell.
+1. Edit the `service.yaml` file to point to your own container registry namespace by replacing the 2 instances of `<NAMESPACE>` with the container registry namespace you created earlier. 
+
+2. Remember that to edit this file, you need to click the pencil icon, edit the file at `fib-knative/service.yaml` and then save the file. After updating `<NAMESPACE>` to your own value, return to the cloudshell.
 
 2. Apply the `service.yaml` file to your cluster.
 
@@ -51,7 +53,11 @@ A Knative BuildTemplate encapsulates a shareable build process with some limited
 	```
 3. Run `kubectl get pods --watch` to see the pods initializing. Note: To exit the watch, use `ctrl + c`.
 
-4. Take a look at the `service.yaml` file again. The service.yaml file defines the required Knative components to build the application from source code in the git repository and push the built container image to the private container registry. Then it'll replace the currently running version of the application with this new one.
+4. Take a look at the `service.yaml` file again:
+	```
+	cat service.yaml
+	```
+	You should see values for the git repository, as well as your private container registry. The service.yaml file defines the required Knative components to build the application from source code in the git repository and push the built container image to the private container registry. Then it'll replace the currently running version of the application with this new one.
 
 5. Now that the app is up, we should be able to call it using a number input. We can do that using a curl command against the URL provided to us. Esnure you've updated the command with your own ingress subdomain.
 
