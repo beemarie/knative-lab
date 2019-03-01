@@ -49,7 +49,7 @@ What hostname should we use? IBM Kubernetes Service gave us an external domain (
 								servicePort: 80
 	```
 
-3. Save the file, and exit the tab.
+3. Save the file, and return to the cloudshell.
 
 2. Apply the ingress rule you just created.
 
