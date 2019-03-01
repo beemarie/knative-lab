@@ -55,7 +55,6 @@ automatically.
 
    You could check the pods in all of the Knative namespaces, but for this
    workshop only "serving" and "build" are required.
-   
 
    Example Ouput:
 
