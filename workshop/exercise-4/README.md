@@ -30,7 +30,7 @@ What hostname should we use? IBM Kubernetes Service gave us an external domain (
 
     ![](../README_images/pencil.png)
 
-2. Navigate to the `fib-knative/forward-ingress.yaml` file, and update `host` with your own `<ingress_subdomain>`
+2. Click Files along the left side, and then navigate to the `fib-knative/forward-ingress.yaml` file, and update `host` with your own `<ingress_subdomain>`
 
     ![](../README_images/forwardIngressfile.png)
 
