@@ -26,9 +26,11 @@ What hostname should we use? IBM Kubernetes Service gave us an external domain (
 
 ### Forward specific requests coming into IKS ingress to the Knative Ingress Gateway
 
-1. When requests come in to our fibonacci application through the ingress subdomain, we want them to be forwarded to the Knative ingress gateway. Edit the `forward-ingress.yaml` file with your own ingress subdomain, prepended with `fib-knative.default`. Remember that the fully qualified domain name for a route has the following form: `{route}.{namespace}.{domain}`. To edit the file, first click the pencil icon, or return to the tab you already have opened.
+1. When requests come in to our fibonacci application through the ingress subdomain, we want them to be forwarded to the Knative ingress gateway. Edit the `forward-ingress.yaml` file with your own ingress subdomain, prepended with `fib-knative.default`. Remember that the fully qualified domain name for a route has the following form: `{route}.{namespace}.{domain}`. To edit the file, first click the pencil icon.
 
-2. Then navigate to the `fib-knative/forward-ingress.yaml` file, and update `host` with your own `<ingress_subdomain>`
+    ![](../README_images/pencil.png)
+
+2. Navigate to the `fib-knative/forward-ingress.yaml` file, and update `host` with your own `<ingress_subdomain>`
 
 	The file should look something like:
 
