@@ -46,7 +46,7 @@ A `Secret` is a Kubernetes object containing sensitive data such as a password, 
     echo -n "<token_value>" | base64 -b0  # MacOS
     ```
 
-3. This time we'll create the secret via a .yaml file. Update the `docker-secret.yaml` file with your base64 encoded password. Open the file by clicking the pencil icon in the top right of the terminal:
+3. This time we'll create the secret via a .yaml file. Update the `docker-secret.yaml` file with your base64 encoded password. Open the file by clicking the pencil icon in the top right of the terminal, or use the tab you already have open:
 
     ![](../README_images/pencil.png)
 
