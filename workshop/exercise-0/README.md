@@ -3,7 +3,7 @@ In this section, you will create your own IBM Cloud account, and then get access
 
 1. Create your own [IBM Cloud account](https://cloud.ibm.com).
 2. After the email verification, confirm by logging in to https://cloud.ibm.com
-3. Go to the [Get Cluster](https://knative-workshop.mybluemix.net) web page and enter your IBM ID (the email you used to sign up), the lab key `knativerocks`, and select the `us-south` region.
+3. Go to the [Get Cluster](https://knative-workshop.mybluemix.net) web page and enter your IBM ID (the email you used to sign up), the lab key `knative_rocks!_2019`, and select the `us-south` region.
 
     ![](../README_images/get-clusters.png)
 
