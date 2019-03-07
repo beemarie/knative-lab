@@ -66,7 +66,7 @@ What hostname should we use? IBM Kubernetes Service gave us an external domain (
 Now that we've setup our DNS routing, let's try our `curl` command again using the DNS hostname:
 
 ```
-curl fib-knative.default.<ingress_subdomain>/5
+curl fib-knative.default.$MYINGRESS/5
 ```
 
 Expected Output:

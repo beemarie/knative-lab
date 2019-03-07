@@ -42,7 +42,7 @@ Did you notice that the Fibonacci sequence started with 1? Most would argue that
 3. Curl the application multiple times to see that 100% of the traffic is hitting your new fib-knative revision, starting the sequence with 0. Ensure you've updated the command with your own ingress subdomain.
 
     ```
-    curl http://fib-knative.default.<ingress_subdomain>/20
+    curl http://fib-knative.default.$MYINGRESS/20
     ```
 
 

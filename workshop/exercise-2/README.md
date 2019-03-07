@@ -12,7 +12,7 @@ automatically.
 1. Install Knative on your cluster:
 
     ```
-	ibmcloud ks cluster-addon-enable knative --cluster <your_cluster_name>
+	ibmcloud ks cluster-addon-enable knative --cluster $MYCLUSTER
 	```
 
     When prompted, enter `y` to enable `istio` on your cluster.

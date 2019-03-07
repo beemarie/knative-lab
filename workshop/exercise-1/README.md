@@ -22,20 +22,38 @@ Learn how to set the context for your cluster in your CLI. Every time you log in
 
     > Note: If no clusters are shown, make sure you are targeting the right region with `ibmcloud ks region-set`. Choose the same region that you chose when creating the cluster on the [Get Cluster](https://get-cluster.mybluemix.net/) page.
 
-2. Download the configuration file and certificates for your cluster using the `cluster-config` command.
+2. Export your cluster name as an environment variable:
 
     ```shell
-    ibmcloud ks cluster-config <your_cluster_name>
+    export MYCLUSTER=<your_cluster_name>
     ```
 
-3. Copy and paste the output command from the previous step to set the `KUBECONFIG` environment variable and configure your CLI to run `kubectl` commands against your cluster.
+3. Get some information about your cluster:
+
+    ```shell
+    ibmcloud ks cluster-get $MYCLUSTER
+    ```
+
+4. Export the `Ingress Subdomain` as an environment variable.  The Ingress Subdomain should look something like `knative-lab1.sjc04.containers.appdomain.cloud`
+
+    ```shell
+    export MYINGRESS=<your_ingress_subdomain>
+    ```
+
+5. Download the configuration file and certificates for your cluster using the `cluster-config` command.
+
+    ```shell
+    ibmcloud ks cluster-config $MYCLUSTER
+    ```
+
+6. Copy and paste the output command from the previous step to set the `KUBECONFIG` environment variable and configure your CLI to run `kubectl` commands against your cluster.
 
     Example:
     ```shell
     export KUBECONFIG=/Users...
     ```
 
-4. Validate access to your cluster by viewing the nodes in the cluster.
+7. Validate access to your cluster by viewing the nodes in the cluster.
 
     ```shell
     kubectl get node
