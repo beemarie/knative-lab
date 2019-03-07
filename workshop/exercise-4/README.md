@@ -9,7 +9,7 @@ What hostname should we use? IBM Kubernetes Service gave us an external domain (
 	```shell
 	echo $MYINGRESS
 	```
-	
+
 In this exercise, we'll tell Knative to assign new applications to that URL, and then forward any requests sent to the URL to the Knative Istio Gateway.
 
 1. Your ingress subdomain should look something like this:
@@ -18,7 +18,7 @@ In this exercise, we'll tell Knative to assign new applications to that URL, and
 	Ingress Subdomain:      mycluster6.us-south.containers.appdomain.cloud   
 	```
 
-	Ingress is a Kubernetes service that balances network traffic workloads in your cluster by forwarding public or private requests to your apps. This Ingress Subdomain is an externally available and public URL providing access to your cluster.
+	Ingress is a Kubernetes service that balances network traffic workloads in your cluster by forwarding public or private requests to your apps. This Ingress Subdomain is an externally available and public URL providing access to your cluster. Copy the value of this Ingress Subdomain to the clipboard.
 
 2. Next, update the default URL for new Knative apps by editing the configuration:
 
