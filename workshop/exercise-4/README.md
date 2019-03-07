@@ -4,7 +4,13 @@ When a Knative application is deployed, Knative will define a URL for your appli
 We need to configure Knative to assign new applications to our own domain.
 
 ### Get the Ingress Subdomain for your IBM Kubernetes Cluster
-What hostname should we use? IBM Kubernetes Service gave us an external domain (ingress subdomain) when we created our cluster. We took note of that ingress subdomain in Exercise 0. If you didn't mark it down, go back to the IBM Cloud [dashboard](https://cloud.ibm.com/containers-kubernetes/clusters) and click on your cluster to find it. In this exercise, we'll tell Knative to assign new applications to that URL, and then forward any requests sent to the URL to the Knative Istio Gateway.
+What hostname should we use? IBM Kubernetes Service gave us an external domain (ingress subdomain) when we created our cluster. We took note of that ingress subdomain in Exercise 0. If you didn't mark it down, go back to the IBM Cloud [dashboard](https://cloud.ibm.com/containers-kubernetes/clusters) and click on your cluster to find it. It is also stored as an environment variable, so you could just run the following `echo` command:
+
+	```shell
+	echo $MYINGRESS
+	```
+	
+In this exercise, we'll tell Knative to assign new applications to that URL, and then forward any requests sent to the URL to the Knative Istio Gateway.
 
 1. Your ingress subdomain should look something like this:
 
