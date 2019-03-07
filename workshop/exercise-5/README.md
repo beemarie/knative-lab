@@ -22,7 +22,13 @@ In the previous exercises, we deployed a container to Knative directly from dock
     ibmcloud cr token-add --description "knative read write token for all namespaces" --non-expiring --readwrite
     ```
 
-3. The CLI output should include a Token Identifier and the Token. Make note of the Token for later in this lab. You will not need the Token Identifier. You can verify that the token was created by listing all tokens.
+3. Create an environment variable containing your token.
+
+    ```
+    export MYTOKEN=<your_token_value>
+    ```
+
+4. The CLI output should include a Token Identifier and the Token. Make note of the Token for later in this lab. You will not need the Token Identifier. You can verify that the token was created by listing all tokens.
 
     ```
     ibmcloud cr token-list
@@ -36,14 +42,14 @@ A `Secret` is a Kubernetes object containing sensitive data such as a password, 
 1. Let's create a secret, which will be a `docker-registry` type secret. This type of secret is used to authenticate with a container registry to pull down a private image. We can create this via the commandline. For username, simply use the string `token`. For `<token_value>`, use the token you made note of earlier.
 
     ```
-    kubectl create secret docker-registry ibm-cr-secret --docker-server=https://registry.ng.bluemix.net --docker-username=token --docker-password=<token_value>
+    kubectl create secret docker-registry ibm-cr-secret --docker-server=https://registry.ng.bluemix.net --docker-username=token --docker-password=$MYTOKEN
     ```
 
 2. We will also need a secret for the build process to have credentials to push the built image to the container registry. To create this object, we'll first need to base64 encode our username and password for IBM Container Registry. For username, you will again use the string `token`. The base64 encoding of `token` should be: `dG9rZW4=` - which is already in the yaml file.  For token_value, again use the token you made note of earlier.
 
     ```
-    echo -n "<token_value>" | base64 -w0  # Linux
-    echo -n "<token_value>" | base64 -b0  # MacOS
+    echo -n "$MYTOKEN" | base64 -w0  # Linux
+    echo -n "$MYTOKEN" | base64 -b0  # MacOS
     ```
 
 3. This time we'll create the secret via a .yaml file. Update the `docker-secret.yaml` file with your base64 encoded password. Open the file by clicking the pencil icon in the top right of the terminal, or use the tab you already have open:
