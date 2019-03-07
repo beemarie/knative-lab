@@ -73,7 +73,7 @@ Because Knative is built on top of Kubernetes, you can use kubectl along with a 
     kubectl get ksvc fib-knative
     ```
 
-6. You'll notice that the domain name is `fib-service.default.example.com`, but we don't actually own anything at `example.com`. We'll see how to update this to our own domain name later, but for now we can directly curl the external IP address for our cluster, and pass in a Host header. Notice that we're calling the `/` endpoint, and passing in a `number` parameter of 5. This should return the first 5 numbers of the fibonacci sequence.
+6. You'll notice that the domain name is `fib-service.default.example.com`, but we don't actually own anything at `example.com`. We'll see how to update this to our own domain name later, but for now we can directly curl the external IP address for our cluster, and pass in a Host header. Notice that we're calling the `/` endpoint, and passing in a `number` parameter of 5. This should return the first 5 numbers of the fibonacci sequence. Run the following curl command, but make sure you replaced {EXTERNAL_IP} with your own IP from the previous steps.
 
     ```
      curl -H 'Host: fib-knative.default.example.com' {EXTERNAL_IP}/5
