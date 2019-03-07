@@ -3,7 +3,7 @@
 Did you notice that the Fibonacci sequence started with 1? Most would argue that the sequence should actually start with 0. There's a vnext version of the application at the vnext branch in the github project. We'll deploy that as v2 of our app, but instead of using kubectl, let's try the knctl tool for interacting with Knative.
 
 ### Deploy vnext
-1. Let's deploy vnext, but instead of kubectl with the service.yaml file, let's use knctl. By providing Knative with the source of our app and the image to push to the container registry, we'll get an application with a URL we can access. Make sure you replace `<NAMESPACE>` with your own container registry namespace.
+1. Let's deploy vnext, but instead of kubectl with the service.yaml file, let's use knctl. By providing Knative with the source of our app and the image to push to the container registry, we'll get an application with a URL we can access.
 
     ```
     knctl deploy \
@@ -11,7 +11,7 @@ Did you notice that the Fibonacci sequence started with 1? Most would argue that
         --git-url https://github.com/IBM/fib-knative \
         --git-revision vnext \
         --service-account build-bot \
-        --image registry.ng.bluemix.net/<NAMESPACE>/fib-knative:vnext \
+        --image registry.ng.bluemix.net/$NAMESPACE/fib-knative:vnext \
         --managed-route=false
     ```
 

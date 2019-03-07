@@ -16,6 +16,13 @@ In the previous exercises, we deployed a container to Knative directly from dock
     ```
     ibmcloud cr namespace-add <my_namespace>
     ```
+
+2. Create an environment variable for this namespace.
+
+    ```
+    export MYNAMESPACE=<my_namespace>
+    ```
+
 2. Create a token. This token is a non-expiring token with read and write access to all namespaces in the region. The automated build processes you'll be setting up will use this token to access your images.
 
     ```
