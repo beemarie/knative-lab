@@ -34,7 +34,7 @@ Learn how to set the context for your cluster in your CLI. Every time you log in
     ibmcloud ks cluster-get $MYCLUSTER
     ```
 
-4. Export the `Ingress Subdomain` as an environment variable.  The Ingress Subdomain should look something like `knative-lab1.sjc04.containers.appdomain.cloud`
+4. Export the `Ingress Subdomain` as an environment variable.  The Ingress Subdomain should look something like: knative-lab1.sjc04.containers.appdomain.cloud
 
     ```shell
     export MYINGRESS=<your_ingress_subdomain>
