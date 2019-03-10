@@ -32,7 +32,7 @@ In this exercise, we'll tell Knative to assign new applications to that URL, and
 
 ### Forward specific requests coming into IKS ingress to the Knative Ingress Gateway
 
-1. When requests come in to our fibonacci application through the ingress subdomain, we want them to be forwarded to the Knative ingress gateway. Edit the `forward-ingress.yaml` file with your own ingress subdomain, prepended with `fib-knative.default`. Remember that the fully qualified domain name for a route has the following form: `{route}.{namespace}.{domain}`. To edit the file, first click the pencil icon.
+1. When requests come in to our fibonacci application through the ingress subdomain, we want them to be forwarded to the Knative ingress gateway. Edit the `forward-ingress.yaml` file with your own ingress subdomain, prepended with `fib-knative.default`. To edit the file, first click the pencil icon.
 
     ![](../README_images/pencil.png)
 
