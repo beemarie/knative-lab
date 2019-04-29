@@ -1,85 +1,116 @@
-## Update domain configuration for Knative
-When a Knative application is deployed, Knative will define a URL for your application. By default, Knative Serving routes use `example.com` as the default domain. We don't actually own anything at `example.com`, so let's create new applications at a domain we do own.
+## Set up a Private Container Registry and Obtain Credentials
 
-We need to configure Knative to assign new applications to our own domain.
+In the previous exercises, we deployed a container to Knative directly from dockerhub. What if we want to build our own container from source? In this lab, we'll use the [IBM Container Registry](https://console.bluemix.net/docs/services/Registry/registry_overview.html#registry_overview) to host our container images since you already have access to this through your IBM Cloud Account. IBM Container Registry enables you to store and distribute container images in a fully managed private registry.
 
-### Get the Ingress Subdomain for your IBM Kubernetes Cluster
-What hostname should we use? IBM Kubernetes Service gave us an external domain (ingress subdomain) when we created our cluster. We took note of that ingress subdomain in Exercise 0. If you didn't mark it down, go back to the IBM Cloud [dashboard](https://cloud.ibm.com/containers-kubernetes/clusters) and click on your cluster to find it. It is also stored as an environment variable, so you could just run the following `echo` command:
+1. You will need to create the IBM Container Registry in your own Account - NOT the IBM Cloud Account which you are currently signed into. Sign into your own account now:
 
-```shell
-echo $MYINGRESS
-```
+    ```
+    ibmcloud login
+    ```
 
-In this exercise, we'll tell Knative to assign new applications to that URL, and then forward any requests sent to the URL to the Knative Istio Gateway.
+    When prompted, select your own account, and then enter the number for the region `us-south`.
 
-1. Your ingress subdomain should look something like this:
 
-	```
-	Ingress Subdomain:      mycluster6.us-south.containers.appdomain.cloud   
-	```
+1. Add a namespace to your account. You must set at least one namespace to store images in IBM Cloud Container Registry. Choose a unique name for your first namespace. A namespace is a collection of related repositories (which in turn are made up of individual images). You can set up multiple namespaces as well as control access to your namespaces by using IAM policies.
 
-	Ingress is a Kubernetes service that balances network traffic workloads in your cluster by forwarding public or private requests to your apps. This Ingress Subdomain is an externally available and public URL providing access to your cluster. Copy the value of this Ingress Subdomain to the clipboard.
+    ```
+    ibmcloud cr namespace-add <my_namespace>
+    ```
 
-2. Next, update the default URL for new Knative apps by editing the configuration:
+2. Create an environment variable for this namespace.
 
-	```
-	kubectl edit cm config-domain --namespace knative-serving
-	```
+    ```
+    export MYNAMESPACE=<my_namespace>
+    ```
 
-3. Change all instances of `example.com` to your ingress subdomain, which should look something like: `knative-workshop2.sjc03.containers.appdomain.cloud`. There should be one instance of `example.com` under `data`. New Knative applications will now be assigned a route with this host, rather than `example.com`.  
+2. Create a token. This token is a non-expiring token with read and write access to all namespaces in the region. The automated build processes you'll be setting up will use this token to access your images.
 
-> Note: This will open vi. Use `i` to insert, `esc` to exit insert mode, `:w` to save, and `:q` to quit.
+    ```
+    ibmcloud cr token-add --description "knative read write token for all namespaces" --non-expiring --readwrite
+    ```
 
-### Forward specific requests coming into IKS ingress to the Knative Ingress Gateway
+3. Create an environment variable containing your token.
 
-1. When requests come in to our fibonacci application through the ingress subdomain, we want them to be forwarded to the Knative ingress gateway. Edit the `forward-ingress.yaml` file with your own ingress subdomain, prepended with `fib-knative.default`. To edit the file, first click the pencil icon.
+    ```
+    export MYTOKEN=<your_token_value>
+    ```
+
+4. The CLI output should include a Token Identifier and the Token. Make note of the Token for later in this lab. You will not need the Token Identifier. You can verify that the token was created by listing all tokens.
+
+    ```
+    ibmcloud cr token-list
+    ```
+
+### Provide Container Registry Credentials to Cluster
+This lab will need credentials for authenticating to your private container registry. First, we'll need to create a `Secret` to store the credentials for this registry. This secret will be used for the knative-serving component to pull down an image from the container registry.
+
+A `Secret` is a Kubernetes object containing sensitive data such as a password, a token, or a key. You can also read more about [Secrets](https://kubernetes.io/docs/concepts/configuration/secret/).
+
+1. Let's create a secret, which will be a `docker-registry` type secret. This type of secret is used to authenticate with a container registry to pull down a private image. We can create this via the commandline. For username, simply use the string `token`. For `<token_value>`, use the token you made note of earlier.
+
+    ```
+    kubectl create secret docker-registry ibm-cr-secret --docker-server=https://registry.ng.bluemix.net --docker-username=token --docker-password=$MYTOKEN
+    ```
+
+2. We will also need a secret for the build process to have credentials to push the built image to the container registry. To create this object, we'll first need to base64 encode our username and password for IBM Container Registry. For username, you will again use the string `token`. The base64 encoding of `token` should be: `dG9rZW4=` - which is already in the yaml file.  For token_value, again use the token you made note of earlier.
+
+    ```
+    echo -n "$MYTOKEN" | base64 -w0  # Linux
+    echo -n "$MYTOKEN" | base64 -b0  # MacOS
+    ```
+
+3. This time we'll create the secret via a .yaml file. Update the `docker-secret.yaml` file with your base64 encoded password. Open the file by clicking the pencil icon in the top right of the terminal, or use the tab you already have open:
 
     ![](../README_images/pencil.png)
 
-2. Click Files along the left side, and then navigate to the `fib-knative/forward-ingress.yaml` file, and update `host` with your own `<ingress_subdomain>`
+4. Click `Files` along the left side, and then navigate to `fib-knative/docker-secret.yaml`.
 
-    ![](../README_images/forwardIngressfile.png)
+    ![](../README_images/docker-secret.png)
 
-	The file should look something like:
-
-	```yaml
-	apiVersion: extensions/v1beta1
-	kind: Ingress
-	metadata:
-		name: iks-knative-ingress
-		namespace: istio-system
-	spec:
-		rules:
-			- host: fib-knative.default.<ingress_subdomain>
-				http:
-					paths:
-						- path: /
-							backend:
-								serviceName: istio-ingressgateway
-								servicePort: 80
+5. You can find the password field near the end of the file. Username (`dG9rZW4=`) is already provided for you.  Replace `<base_64_encoded_token_value>` with your own base64 encoded token value. When copying from the `cloudshell` it's possible that a new line character is generated where the line wrap is. If your token is in two lines like this:
+	```
+	ZXTOKEN_STUFF_HERExkQ0o5LktE
+cFdqNnMORE_TOKEN_STUFFasdfNG8=
 	```
 
-3. Save the file, and return to the cloudshell.
+	Update it so that it is one line, like this `ZXTOKEN_STUFF_HERExkQ0o5LktEcFdqNnMORE_TOKEN_STUFFasdfNG8=`
 
-2. Apply the ingress rule you just created.
+    ![](../README_images/password.png)
 
-	```
-	kubectl apply --filename forward-ingress.yaml
-	```
+6. Save the file and return to the cloudshell.
 
-### Try it again
+7. Apply the secret to your cluster:
 
-Now that we've setup our DNS routing, let's try our `curl` command again using the DNS hostname:
+    ```
+    kubectl apply --filename docker-secret.yaml
+    ```
 
-```
-curl fib-knative.default.$MYINGRESS/5
-```
+8. A `Service Account` provides an identity for processes that run in a Pod. This Service Account will be used to link the build process for Knative to the Secrets you just created. View the service account file, and notice that it's using the credentials you created earlier for pulling from and pushing to the container registry:
 
-Expected Output:
-```
-[1,1,2,3,5]
-```
+    ```
+    cat service-account.yaml
+    ```
 
-Congratulations, your application now lives at its own domain!
+    Example output:
+    ```yaml
+     apiVersion: v1
+     kind: ServiceAccount
+     metadata:
+       name: build-bot
+     secrets:
+     - name: basic-user-pass
+     imagePullSecrets:
+     - name: ibm-cr-secret
+    ```
+
+
+9. Apply the service account to your cluster:
+
+    ```
+    kubectl apply --filename service-account.yaml
+    ```
+
+Congratulations! You've set up some required credentials that the Knative build process will use to have access to push to your container registry. In the next exercise, you will build the container, push it to your container registry, and then deploy the app to knative. The goal of this exercise was to set up some required credentials for that flow.
+
 
 Continue on to [exercise 5](../exercise-5/README.md).

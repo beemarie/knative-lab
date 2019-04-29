@@ -1,116 +1,79 @@
-## Set up a Private Container Registry and Obtain Credentials
+## Build and Deploy our Knative Application
 
-In the previous exercises, we deployed a container to Knative directly from dockerhub. What if we want to build our own container from source? In this lab, we'll use the [IBM Container Registry](https://console.bluemix.net/docs/services/Registry/registry_overview.html#registry_overview) to host our container images since you already have access to this through your IBM Cloud Account. IBM Container Registry enables you to store and distribute container images in a fully managed private registry.
+We've seen how to deploy an application from a container that already exists, so let's build the container image ourselves from source code. Using the Build & Serving components of Knative, we can build the image and push it to a private container registry on IBM Cloud, and then ultimately get a URL to access our application.
 
-1. You will need to create the IBM Container Registry in your own Account - NOT the IBM Cloud Account which you are currently signed into. Sign into your own account now:
+### Install Kaniko Build Template
 
-    ```
-    ibmcloud login
-    ```
+As a part of this lab, we will use the kaniko build template for building source into a container image from a Dockerfile. Kaniko doesn't depend on a Docker engine and instead executes each command within the Dockerfile completely in userspace. This enables building container images in environments that can't easily or securely run a Docker engine, such as Kubernetes.
 
-    When prompted, select your own account, and then enter the number for the region `us-south`.
+A Knative BuildTemplate encapsulates a shareable build process with some limited parameterization capabilities.
 
-
-1. Add a namespace to your account. You must set at least one namespace to store images in IBM Cloud Container Registry. Choose a unique name for your first namespace. A namespace is a collection of related repositories (which in turn are made up of individual images). You can set up multiple namespaces as well as control access to your namespaces by using IAM policies.
+1. Install the kaniko build template to your cluster.
 
     ```
-    ibmcloud cr namespace-add <my_namespace>
+    kubectl apply --filename https://raw.githubusercontent.com/knative/build-templates/master/kaniko/kaniko.yaml
     ```
 
-2. Create an environment variable for this namespace.
+2. Use kubectl to confirm you installed the kaniko build template, as well as to see some more details about it.  You'll see that this build template accepts parameters of `IMAGE` and `DOCKERFILE`.  `IMAGE` is the name of the image you will push to the container registry, and `DOCKERFILE` is the path to the Dockerfile that will be built.
 
-    ```
-    export MYNAMESPACE=<my_namespace>
-    ```
-
-2. Create a token. This token is a non-expiring token with read and write access to all namespaces in the region. The automated build processes you'll be setting up will use this token to access your images.
-
-    ```
-    ibmcloud cr token-add --description "knative read write token for all namespaces" --non-expiring --readwrite
-    ```
-
-3. Create an environment variable containing your token.
-
-    ```
-    export MYTOKEN=<your_token_value>
-    ```
-
-4. The CLI output should include a Token Identifier and the Token. Make note of the Token for later in this lab. You will not need the Token Identifier. You can verify that the token was created by listing all tokens.
-
-    ```
-    ibmcloud cr token-list
-    ```
-
-### Provide Container Registry Credentials to Cluster
-This lab will need credentials for authenticating to your private container registry. First, we'll need to create a `Secret` to store the credentials for this registry. This secret will be used for the knative-serving component to pull down an image from the container registry.
-
-A `Secret` is a Kubernetes object containing sensitive data such as a password, a token, or a key. You can also read more about [Secrets](https://kubernetes.io/docs/concepts/configuration/secret/).
-
-1. Let's create a secret, which will be a `docker-registry` type secret. This type of secret is used to authenticate with a container registry to pull down a private image. We can create this via the commandline. For username, simply use the string `token`. For `<token_value>`, use the token you made note of earlier.
-
-    ```
-    kubectl create secret docker-registry ibm-cr-secret --docker-server=https://registry.ng.bluemix.net --docker-username=token --docker-password=$MYTOKEN
-    ```
-
-2. We will also need a secret for the build process to have credentials to push the built image to the container registry. To create this object, we'll first need to base64 encode our username and password for IBM Container Registry. For username, you will again use the string `token`. The base64 encoding of `token` should be: `dG9rZW4=` - which is already in the yaml file.  For token_value, again use the token you made note of earlier.
-
-    ```
-    echo -n "$MYTOKEN" | base64 -w0  # Linux
-    echo -n "$MYTOKEN" | base64 -b0  # MacOS
-    ```
-
-3. This time we'll create the secret via a .yaml file. Update the `docker-secret.yaml` file with your base64 encoded password. Open the file by clicking the pencil icon in the top right of the terminal, or use the tab you already have open:
-
-    ![](../README_images/pencil.png)
-
-4. Click `Files` along the left side, and then navigate to `fib-knative/docker-secret.yaml`.
-
-    ![](../README_images/docker-secret.png)
-
-5. You can find the password field near the end of the file. Username (`dG9rZW4=`) is already provided for you.  Replace `<base_64_encoded_token_value>` with your own base64 encoded token value. When copying from the `cloudshell` it's possible that a new line character is generated where the line wrap is. If your token is in two lines like this:
+	Command:
 	```
-	ZXTOKEN_STUFF_HERExkQ0o5LktE
-cFdqNnMORE_TOKEN_STUFFasdfNG8=
+	kubectl get BuildTemplate kaniko -o yaml
 	```
 
-	Update it so that it is one line, like this `ZXTOKEN_STUFF_HERExkQ0o5LktEcFdqNnMORE_TOKEN_STUFFasdfNG8=`
-
-    ![](../README_images/password.png)
-
-6. Save the file and return to the cloudshell.
-
-7. Apply the secret to your cluster:
-
-    ```
-    kubectl apply --filename docker-secret.yaml
-    ```
-
-8. A `Service Account` provides an identity for processes that run in a Pod. This Service Account will be used to link the build process for Knative to the Secrets you just created. View the service account file, and notice that it's using the credentials you created earlier for pulling from and pushing to the container registry:
-
-    ```
-    cat service-account.yaml
-    ```
-
-    Example output:
-    ```yaml
-     apiVersion: v1
-     kind: ServiceAccount
-     metadata:
-       name: build-bot
-     secrets:
-     - name: basic-user-pass
-     imagePullSecrets:
-     - name: ibm-cr-secret
-    ```
+	Example Output:
+	```yaml
+      spec:
+        generation: 1
+        parameters:
+        - description: The name of the image to push
+          name: IMAGE
+        - default: /workspace/Dockerfile
+          description: Path to the Dockerfile to build.
+          name: DOCKERFILE
+        steps:
+        - args:
+          - --dockerfile=${DOCKERFILE}
+          - --destination=${IMAGE}
+          image: gcr.io/kaniko-project/executor
+          name: build-and-push
+	```
 
 
-9. Apply the service account to your cluster:
+### Deploy the Fibonacci App Using kubectl and service.yaml
 
-    ```
-    kubectl apply --filename service-account.yaml
-    ```
+1. Edit the `service.yaml` file to point to your own container registry namespace by replacing the 2 instances of `<NAMESPACE>` with the container registry namespace you created earlier. 
 
-Congratulations! You've set up some required credentials that the Knative build process will use to have access to push to your container registry. In the next exercise, you will build the container, push it to your container registry, and then deploy the app to knative. The goal of this exercise was to set up some required credentials for that flow.
+2. Remember that to edit this file, you need to click the pencil icon, edit the file at `fib-knative/service.yaml` and then save the file. After updating `<NAMESPACE>` to your own value, return to the cloudshell.
 
+2. Apply the `service.yaml` file to your cluster.
+
+	```
+	kubectl apply -f service.yaml
+	```
+3. Run `kubectl get pods --watch` to see the pods initializing. Note: To exit the watch, use `ctrl + c`.
+
+4. Take a look at the `service.yaml` file again:
+	```
+	cat service.yaml
+	```
+	You should see values for the git repository, as well as your private container registry. The service.yaml file defines the required Knative components to build the application from source code in the git repository and push the built container image to the private container registry. Then it'll replace the currently running version of the application with this new one.
+
+5. Now that the app is up, we should be able to call it using a number input. We can do that using a curl command against the URL provided to us. Esnure you've updated the command with your own ingress subdomain.
+
+	```
+	curl $MY_DOMAIN/20
+	```
+6. You should see the first 20 Fibonacci numbers!
+
+7. If we left this application alone for some time, it would scale itself back down to 0, and terminate the pods that were created. Run `kubectl get pods --watch` and wait until you see the application scale itself back down to 0. When the application is no longer in use, you should eventually see the pods move from the `Running` to the `Terminating` state. Note: To exit the watch, use `ctrl + c`.
+
+	Expected Output:
+	```
+	NAME                                            READY   STATUS      RESTARTS   AGE
+	fib-knative-00002-deployment-58dcbdb97c-rrnzc   3/3     Running     0          56s
+	fib-knative-00002-deployment-58dcbdb97c-rrnzc   3/3   Terminating   0          89s
+	fib-knative-00002-deployment-58dcbdb97c-rrnzc   0/3   Terminating   0          91s
+	```
 
 Continue on to [exercise 6](../exercise-6/README.md).
