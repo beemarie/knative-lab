@@ -68,6 +68,7 @@ A `Secret` is a Kubernetes object containing sensitive data such as a password, 
     ![](../README_images/docker-secret.png)
 
 5. You can find the password field near the end of the file. Username (`dG9rZW4=`) is already provided for you.  Replace `<base_64_encoded_token_value>` with your own base64 encoded token value. When copying from the `cloudshell` it's possible that a new line character is generated where the line wrap is. If your token is in two lines like this:
+
 	```
 	ZXTOKEN_STUFF_HERExkQ0o5LktE
 cFdqNnMORE_TOKEN_STUFFasdfNG8=
