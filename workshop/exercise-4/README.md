@@ -71,7 +71,7 @@ A `Secret` is a Kubernetes object containing sensitive data such as a password, 
 
 	```
 	ZXTOKEN_STUFF_HERExkQ0o5LktE
-cFdqNnMORE_TOKEN_STUFFasdfNG8=
+    cFdqNnMORE_TOKEN_STUFFasdfNG8=
 	```
 
 	Update it so that it is one line, like this `ZXTOKEN_STUFF_HERExkQ0o5LktEcFdqNnMORE_TOKEN_STUFFasdfNG8=`
