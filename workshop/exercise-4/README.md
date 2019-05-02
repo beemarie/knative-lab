@@ -1,117 +1,101 @@
-## Set up a Private Container Registry and Obtain Credentials
+## Clone the Application Repo and Deploy our First Application
 
-In the previous exercises, we deployed a container to Knative directly from dockerhub. What if we want to build our own container from source? In this lab, we'll use the [IBM Container Registry](https://console.bluemix.net/docs/services/Registry/registry_overview.html#registry_overview) to host our container images since you already have access to this through your IBM Cloud Account. IBM Container Registry enables you to store and distribute container images in a fully managed private registry.
+### Clone the application repo
+Let's get the code we'll use for today's lab. This repository contains the code for the Fibonacci application as well as various .yaml files we'll use throughout the lab.
 
-1. You will need to create the IBM Container Registry in your own Account - NOT the IBM Cloud Account which you are currently signed into. Sign into your own account now:
-
-    ```
-    ibmcloud login
-    ```
-
-    When prompted, select your own account, and then enter the number for the region `us-south`.
-
-
-1. Add a namespace to your account. You must set at least one namespace to store images in IBM Cloud Container Registry. Choose a unique name for your first namespace. A namespace is a collection of related repositories (which in turn are made up of individual images). You can set up multiple namespaces as well as control access to your namespaces by using IAM policies.
+1. Clone the git repository:
 
     ```
-    ibmcloud cr namespace-add <my_namespace>
+    git clone https://github.com/beemarie/fib-knative.git
     ```
 
-2. Create an environment variable for this namespace.
+2. Change directories to the fib-knative folder.
 
     ```
-    export MYNAMESPACE=<my_namespace>
+    cd fib-knative
     ```
 
-2. Create a token. This token is a non-expiring token with read and write access to all namespaces in the region. The automated build processes you'll be setting up will use this token to access your images.
+## Deploy Our Application in a Different Way
+In this exercise, we'll use the Knative Serving component to deploy our application from a container image hosted on dockerhub. Instead of using the `kn` cli, we'll use `kubectl` and `.yaml` files. This should feel familiar if you're a kubernetes user.
+
+### Create a Service Definition
+Knative defines some objects for each component as Kubernetes [Custom Resource Definitions](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources)(CRDs). A CRD is used to define a new resource type in Kubernetes. Knative [Serving](https://github.com/knative/docs/tree/master/docs/serving#serving-resources) includes a number of Custom Resource Definitions, including Service, Route, Configuration, and Revision.
+
+Because Knative is built on top of Kubernetes, you can use kubectl along with configuration files to create custom objects representing your application.
+
+1. In the `fib-knative` project you cloned earlier, you should see a file called `fib-service1.yaml`. Look at the contents of the file:
 
     ```
-    ibmcloud cr token-add --description "knative read write token for all namespaces" --non-expiring --readwrite
+    cat fib-service1.yaml
     ```
 
-3. Create an environment variable containing your token.
-
+    File Contents:
     ```
-    export MYTOKEN=<your_token_value>
-    ```
-
-4. The CLI output should include a Token Identifier and the Token. Make note of the Token for later in this lab. You will not need the Token Identifier. You can verify that the token was created by listing all tokens.
-
-    ```
-    ibmcloud cr token-list
-    ```
-
-### Provide Container Registry Credentials to Cluster
-This lab will need credentials for authenticating to your private container registry. First, we'll need to create a `Secret` to store the credentials for this registry. This secret will be used for the knative-serving component to pull down an image from the container registry.
-
-A `Secret` is a Kubernetes object containing sensitive data such as a password, a token, or a key. You can also read more about [Secrets](https://kubernetes.io/docs/concepts/configuration/secret/).
-
-1. Let's create a secret, which will be a `docker-registry` type secret. This type of secret is used to authenticate with a container registry to pull down a private image. We can create this via the commandline. For username, simply use the string `token`. For `<token_value>`, use the token you made note of earlier.
-
-    ```
-    kubectl create secret docker-registry ibm-cr-secret --docker-server=https://registry.ng.bluemix.net --docker-username=token --docker-password=$MYTOKEN
-    ```
-
-2. We will also need a secret for the build process to have credentials to push the built image to the container registry. To create this object, we'll first need to base64 encode our username and password for IBM Container Registry. For username, you will again use the string `token`. The base64 encoding of `token` should be: `dG9rZW4=` - which is already in the yaml file.  For token_value, again use the token you made note of earlier.
-
-    ```
-    echo -n "$MYTOKEN" | base64 -w0  # Linux
-    echo -n "$MYTOKEN" | base64 -b0  # MacOS
+    apiVersion: serving.knative.dev/v1alpha1
+    kind: Configuration
+    metadata:
+    name: fib-knative-1
+    namespace: default
+    spec:
+    revisionTemplate:
+        spec:
+        container:
+            image: docker.io/ibmcom/fib-knative
+    ---
+    apiVersion: serving.knative.dev/v1alpha1
+    kind: Route
+    metadata:
+    name: fib-knative
+    namespace: default 
+    spec:
+    traffic:
+    - configurationName: fib-knative-1
+        percent: 100 # All traffic goes to fib-knative-1
     ```
 
-3. This time we'll create the secret via a .yaml file. Update the `docker-secret.yaml` file with your base64 encoded password. Open the file by clicking the pencil icon in the top right of the terminal, or use the tab you already have open:
+    The `fib-service1.yaml` file describes a `Configuration` and `Route` for your application. A `Service` will be created for you automatically. Notice that it includes a name for the Configuration (fib-knative-1), the namespace (default), and a reference to the container image on dockerhub (docker.io/ibmcom/fib-knative). This file also describes the Route for your applicaiton, sending 100% of the traffic to the configuration you're creating, `fib-knative-1`. 
+    
+    We could have also created a Service, and had the Route and Configuration created automatically for us, but we want a little bit more control for later on in the lab.
 
-    ![](../README_images/pencil.png)
-
-4. Click `Files` along the left side, and then navigate to `fib-knative/docker-secret.yaml`.
-
-    ![](../README_images/docker-secret.png)
-
-5. You can find the password field near the end of the file. Username (`dG9rZW4=`) is already provided for you.  Replace `<base_64_encoded_token_value>` with your own base64 encoded token value. When copying from the `cloudshell` it's possible that a new line character is generated where the line wrap is. If your token is in two lines like this:
-
-	```
-	ZXTOKEN_STUFF_HERExkQ0o5LktE
-    cFdqNnMORE_TOKEN_STUFFasdfNG8=
-	```
-
-	Update it so that it is one line, like this `ZXTOKEN_STUFF_HERExkQ0o5LktEcFdqNnMORE_TOKEN_STUFFasdfNG8=`
-
-    ![](../README_images/password.png)
-
-6. Save the file and return to the cloudshell.
-
-7. Apply the secret to your cluster:
+2. Let's deploy this app into our cluster. Apply the `fib-service1.yaml` file.
 
     ```
-    kubectl apply --filename docker-secret.yaml
+    kubectl apply --filename fib-service1.yaml
     ```
 
-8. A `Service Account` provides an identity for processes that run in a Pod. This Service Account will be used to link the build process for Knative to the Secrets you just created. View the service account file, and notice that it's using the credentials you created earlier for pulling from and pushing to the container registry:
+3. Watch the pods initializing as our application gets deployed and starts up:
 
     ```
-    cat service-account.yaml
+    kubectl get pods --watch
     ```
 
-    Example output:
-    ```yaml
-     apiVersion: v1
-     kind: ServiceAccount
-     metadata:
-       name: build-bot
-     secrets:
-     - name: basic-user-pass
-     imagePullSecrets:
-     - name: ibm-cr-secret
-    ```
+    Note: To exit the watch, use `ctrl + c`.
 
-
-9. Apply the service account to your cluster:
+4. Let's try out our application again! Because the service name was the same, `fib-knative`, the domain name for our service should be the same. You can double check if you want.
 
     ```
-    kubectl apply --filename service-account.yaml
+    kubectl get route
     ```
 
-Congratulations! You've set up some required credentials that the Knative build process will use to have access to push to your container registry. In the next exercise, you will build the container, push it to your container registry, and then deploy the app to knative. The goal of this exercise was to set up some required credentials for that flow.
+5. The domain name should look something like `fib-knative.default.bmv-kubeflow.us-south.containers.appdomain.cloud`.
 
+6. We can now curl this domain to try out our application. Notice that we're calling the `/` endpoint, and passing in a `number` parameter of 5. This should return the first 5 numbers of the fibonacci sequence.
+
+    ```
+    curl $MY_DOMAIN/5
+    ```
+
+    Expected Output:
+    ```
+    [1,1,2,3,5]
+    ```
+
+7. Congratulations! You've got your Knative application deployed and responding to requests again. Try sending some different number requests. If you stop making requests to the application, you should eventually see that your application scales itself back down to zero. Watch the pod until you see that it is `Terminating`. This should take approximately 90 seconds.
+
+    ```
+    kubectl get pods --watch
+    ```
+
+    Note: To exit the watch, use `ctrl + c`.
 
 Continue on to [exercise 5](../exercise-5/README.md).
