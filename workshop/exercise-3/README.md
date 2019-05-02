@@ -1,59 +1,23 @@
-## Clone the Application Repo and Deploy our First Application
+## Deploy our First Application to Knative using the Knative Client (kn)
+A relatively new project, the knative client aims to make interacting with Knative a seamless experience for developers. We'll try deploying an application using `kn`, then we'll deploy the same application using `kubectl` and `.yaml` files for additional control. The application for this lab is a simple node.js with express app which returns the first n numbers of the Fibonacci sequence. To use the app, deploy it, and simply make a GET request to the `/` endpoint with a number as the parameter. 
 
-### Clone the application repo
-The application for this lab is a simple node.js with express app which returns the first n numbers of the Fibonacci sequence. To use the app, deploy it, and simply make a GET request to the `/` endpoint with a number as the parameter. We'll deploy this application using Knative later, but for now just clone it from github.
+# Our First Knative Service
+Knative Serving supports deploying and serving of serverless applications and functions. Those applications and functions will automatically scale up, and then back down to zero. In this exercise, we'll use the Knative Serving component to deploy our first application from a container image hosted on dockerhub. 
 
-1. Clone the git repository:
+Knative Services automatically manage the whole lifecycle for your workload. A service represents your app on Knative. Services control the creation of other objects to ensure that your app has a route, a configuration, and a new revision for each update of the service.
 
-    ```
-    git clone https://github.com/IBM/fib-knative.git
-    ```
+![](https://github.com/knative/serving/raw/master/docs/spec/images/object_model.png)
 
-2. Change directories to the fib-knative folder.
+# Deploy our Application to Knative using kn
+We've already created an image on dockerhub that contains the first version of our Fibonacci application. If we call the `/` endpoint, and pass in a `number` parameter, we should get the first `n` numbers of the Fibonacci sequence.
 
-    ```
-    cd fib-knative
-    ```
-
-## Deploy Our First Knative Application
-Knative Serving supports deploying and serving of serverless applications and functions. Those applications and functions will automatically scale up, and then back down to zero. In this exercise, we'll use the Knative Serving component to deploy our first application from a container image hosted on dockerhub.
-
-### Create a Service Definition
-Knative defines some objects for each component as Kubernetes [Custom Resource Definitions](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources)(CRDs). A CRD is used to define a new resource type in Kubernetes. Knative [Serving](https://github.com/knative/docs/tree/master/docs/serving#serving-resources) includes a number of Custom Resource Definitions, including Service, Route, Configuration, and Revision.
-
-Because Knative is built on top of Kubernetes, you can use kubectl along with a service definition file to create a new Service definition for your application.
-
-1. In the `fib-knative` project you cloned earlier, you should see a file called `fib-service.yaml`. Look at the contents of the file:
+1. Deploy the application:
 
     ```
-    cat fib-service.yaml
+    kn service create --image docker.io/ibmcom/fib-knative fib-knative
     ```
 
-    File Contents:
-    ```
-    apiVersion: serving.knative.dev/v1alpha1
-    kind: Service
-    metadata:
-      name: fib-knative
-      namespace: default
-    spec:
-      runLatest:
-        configuration:
-          revisionTemplate:
-            spec:
-              container:
-                image: docker.io/ibmcom/fib-knative
-    ```
-
-    The `fib-service.yaml` file describes a Service. Notice that it includes the name (fib-knative), the namespace (default), and a reference to the container image on dockerhub (docker.io/ibmcom/fib-knative).
-
-2. Let's deploy this app into our cluster. Apply the `fib-service.yaml` file.
-
-    ```
-    kubectl apply --filename fib-service.yaml
-    ```
-
-3. Watch the pods initializing as our application gets deployed and starts up:
+2. Watch the pods initializing as our application gets deployed and starts up:
 
     ```
     kubectl get pods --watch
@@ -61,19 +25,18 @@ Because Knative is built on top of Kubernetes, you can use kubectl along with a 
 
     Note: To exit the watch, use `ctrl + c`.
 
-4. Let's try out our new application! First, let's get the domain name that Knative assigned to the Service we just deployed. Run the following command, and note the value for `domain`. IBM Cloud Kubernetes Service sets the default domain name for Knative to match the domain name of your IBM Cloud Kubernetes Service cluster. It will also set up the Istio ingress to route all incoming requests targeted to that domain to Knative.
+3. Let's try out our new application! First, let's get the domain name that Knative assigned to the Route for the Service we just deployed. Run the following command, and note the value for `domain`. IBM Cloud Kubernetes Service sets the default domain name for Knative to match the domain name of your IBM Cloud Kubernetes Service cluster.
 
     ```
-    kubectl get ksvc fib-knative
+    kubectl get route fib-knative
     ```
 
-5. The domain name should look something like `fib-knative.default.bmv-kubeflow.us-south.containers.appdomain.cloud`. We can set an environment variable so that we can use this throughout the lab:
+4. The domain name should look something like `fib-knative.default.bmv-kubeflow.us-south.containers.appdomain.cloud`. We can set an environment variable so that we can use this throughout the lab:
 
     ```
     export MY_DOMAIN=<your_app_domain_here>
     ```
-
-6. We can now curl this domain to try out our application. Notice that we're calling the `/` endpoint, and passing in a `number` parameter of 5. This should return the first 5 numbers of the fibonacci sequence.
+5. We can now curl this domain to try out our application. Notice that we're calling the `/` endpoint, and passing in a `number` parameter of 5. This should return the first 5 numbers of the fibonacci sequence.
 
     ```
     curl $MY_DOMAIN/5
@@ -84,12 +47,18 @@ Because Knative is built on top of Kubernetes, you can use kubectl along with a 
     [1,1,2,3,5]
     ```
 
-7. Congratulations! You've got your first Knative application deployed and responding to requests. Try sending some different number requests. If you stop making requests to the application, you should eventually see that your application scales itself back down to zero. Watch the pod until you see that it is `Terminating`. This should take approximately 90 seconds.
+6. Congratulations! You've got your first Knative application deployed and responding to requests. Try sending some different number requests. If you stop making requests to the application, you should eventually see that your application scales itself back down to zero. Watch the pod until you see that it is `Terminating`. This should take approximately 90 seconds.
 
     ```
     kubectl get pods --watch
     ```
 
     Note: To exit the watch, use `ctrl + c`.
+
+7. We'll redeploy this same application in a different way in the next exercise, so let's clean up.
+
+    ```
+    kn service delete fib-knative
+    ```
 
 Continue on to [exercise 4](../exercise-4/README.md).
