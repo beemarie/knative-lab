@@ -1,4 +1,4 @@
-## Clone the Application Repo and Deploy our First Application
+## Clone the Application Repo and Deploy our Application using Kubectl and yaml
 
 ### Clone the application repo
 Let's get the code we'll use for today's lab. This repository contains the code for the Fibonacci application as well as various .yaml files we'll use throughout the lab.
@@ -15,10 +15,10 @@ Let's get the code we'll use for today's lab. This repository contains the code 
     cd fib-knative
     ```
 
-## Deploy Our Application in a Different Way
+## Deploy Our Application using kubectl and yaml
 In this exercise, we'll use the Knative Serving component to deploy our application from a container image hosted on dockerhub. Instead of using the `kn` cli, we'll use `kubectl` and `.yaml` files. This should feel familiar if you're a kubernetes user.
 
-### Create a Service Definition
+### Create the Configuration and Route for our Service
 Knative defines some objects for each component as Kubernetes [Custom Resource Definitions](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources)(CRDs). A CRD is used to define a new resource type in Kubernetes. Knative [Serving](https://github.com/knative/docs/tree/master/docs/serving#serving-resources) includes a number of Custom Resource Definitions, including Service, Route, Configuration, and Revision.
 
 Because Knative is built on top of Kubernetes, you can use kubectl along with configuration files to create custom objects representing your application.
