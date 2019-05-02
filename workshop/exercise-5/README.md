@@ -1,9 +1,9 @@
-## Deploy vnext Version Using knctl
+## Deploy vnext Version and Apply Traffic Shifting
 
 Did you notice that the Fibonacci sequence started with 1? Most would argue that the sequence should actually start with 0. There's a vnext version of the application at the vnext branch in the github project. This container has been built and deployed to dockerhub, and tagged as vnext. We'll deploy that as v2 of our app.
 
 ### Deploy vnext
-1. Let's deploy vnext, again using a docker image on dockerhub. Maybe we want to slowly roll users over from our old version to the new version, or do some A/B testing of the new version. We can update the Route section of our `.yaml` file to do so. Let's look at our new `.yaml`
+1. Let's deploy vnext, again using a docker image on dockerhub. Maybe we want to slowly roll users over from our old version to the new version, or do some A/B testing of the new version. We can update the Route section of our `.yaml` file to do some traffic shifting. Let's look at our new `.yaml`
 
     ```
     cat fib-service0.yaml
@@ -35,7 +35,7 @@ Did you notice that the Fibonacci sequence started with 1? Most would argue that
         percent: 50
     ```
 
-	Notice that we're defining a new Configuration, this time with a name of `fib-knative-0`, since the sequence will start with 0. This configuration references the `vnext` version of our image on dockerhub. In the `Route` block, we're using this configuration name, and our previous configuration name of `fib-knative-1` to route different traffic percentages to each revision.
+	Notice that we're defining a new Configuration, this time with a name of `fib-knative-0`, since the sequence will start with 0. This configuration references the `vnext` version of our image on dockerhub, which returns 0 as its first digit. In the `Route` block, we're using this configuration name, and our previous configuration name of `fib-knative-1` to route different traffic percentages to each revision.
 
 2. Let's deploy this app into our cluster. Apply the `fib-service0.yaml` file.
 
