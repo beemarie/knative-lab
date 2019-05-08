@@ -37,6 +37,8 @@ Did you notice that the Fibonacci sequence started with 1? Most would argue that
 
 3. Edit the `fib-service2.yaml` file to change `fib-knative-xxxxx` to your own revision name. To edit the file you need to click the pencil icon, edit the file at `fib-knative/fib-service2.yaml` and then save the file. After updating `fib-knative-xxxxx` to your own value, return to the cloudshell.
 
+    ![](../README_images/pencil.png)
+
 4. Apply your new configuration to the cluster.
 
     ```

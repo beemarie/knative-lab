@@ -69,7 +69,7 @@ A Knative BuildTemplate encapsulates a shareable build process with some limited
 6. The route should begin with `fib-knative-built`. Save that in an environment variable now:
 
 	```
-	export $MY_BUILT_DOMAIN=fib-knative-built....
+	export MY_BUILT_DOMAIN=fib-knative-built....
 	```
 
 7. Now that the app is up, we should be able to call it using a number input. We can do that using a curl command against the URL provided to us. Ensure you've updated the command with your own ingress subdomain.
