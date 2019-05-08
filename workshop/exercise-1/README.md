@@ -5,7 +5,7 @@ You must already have an IBM account, with a cluster created or assigned to you 
 ## Connect to your cluster using the Cloud Shell
 For this lab, a hosted shell is provided for you with all the necessary tools installed. Use this web shell to perform the tasks in this lab.
 
-1. Using Chrome or Firefox, go to the [Cloud Shell](https://cloudshell-console-knative.us-south.cf.cloud.ibm.com/) and login using the Login button, using the password `knat1ve`. You may already be logged in, if so skip to the next step.
+1. Using Chrome or Firefox, go to the [Cloud Shell](https://cloudshell-console-ikslab.us-south.cf.cloud.ibm.com/) and login using the Login button, using the password `ikslab`. You may already be logged in, if so skip to the next step.
 2. Using the account drop down, choose the `IBM` account.
 3. Click on the Terminal icon to launch your web shell.
 
