@@ -51,7 +51,7 @@ Did you notice that the Fibonacci sequence started with 1? Most would argue that
 	while sleep 0.5; do curl "$MY_DOMAIN/1"; done
 	```
 
-6. We should see that the curl requests are routed approximately 90/10 between the two applications. Let's kill this process using `ctrl + c`.
+6. We should see that the curl requests are routed approximately 90/10 between the two revisions. Let's kill this process using `ctrl + c`.
 
 
 Congratulations! You've completed the lab!  If you have tons of time left over, and are interested in diving deeper, we've included 2 advanced exercises you could complete.
