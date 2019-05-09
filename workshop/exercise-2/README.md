@@ -1,25 +1,15 @@
-## Setup: Install Istio and Knative on Your Cluster
+## Setup: Confirm Istio & Knative were Installed on your Cluster
 
 Knative is currently built on top of both Kubernetes and Istio.
 If you want to learn more about Kubernetes or Istio, you can check out the
 labs [Kube101](https://github.com/IBM/kube101/tree/master/workshop) and
 [Istio101](https://github.com/IBM/istio101/tree/master/workshop).
 When you install Knative on IKS, it will install Istio for you
-automatically.
+automatically. 
 
-### Install Knative
+### Confirm Knative Installation
 
-1. Install Knative on your cluster:
-
-    ```
-	ibmcloud ks cluster-addon-enable knative --cluster $MYCLUSTER
-	```
-
-    When prompted, enter `y` to enable `istio` on your cluster.
-
-2. The install process may take a minute or two. To know when it's done you
-   can run two commands - first see if the Istio and Knative namespaces
-   are there:
+1. For this lab, Knative and Istio have been installed on your cluster already. You can explore the various namespaces and pods that were created as a result of this installation. Look at the Istio & Knative namespaces:
 
    ```
    kubectl get namespace
@@ -44,7 +34,7 @@ automatically.
 
    Notice the `istio-system` namespace, and the `knative-...` namespaces.
 
-3. Once the namespaces are there, check to see if all of the Istio and
+2. Once the namespaces are there, you can also check to see if all of the Istio and
    Knative pods are running correctly:
 
    ```
@@ -68,6 +58,6 @@ automatically.
    webhook-5dcbf967cd-lxzmk      1/1     Running   0          35s
    ```
 
-   If all of the pods shown are in a `Running` or `Completed` state then you should be all set. If not, wait a couple of minutes until all the pods are `Running` or `Completed`.
+   If all of the pods shown are in a `Running` or `Completed` state then you should be all set.
 
 Continue on to [exercise 3](../exercise-3/README.md).
